@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+
 use ApiPlatform\Api\IriConverterInterface;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,5 +21,10 @@ class SecurityController extends AbstractController
         return new Response(null, Response::HTTP_NO_CONTENT, [
             'Location' => $iriConverter->getIriFromResource($user)
         ]);
+    }
+
+    #[Route('/logout', name: 'app_logout')]
+    public function logout(): void
+    {
     }
 }
