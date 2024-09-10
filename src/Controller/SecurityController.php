@@ -11,8 +11,12 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class SecurityController extends AbstractController
 {
     #[Route('/login', name: 'app_login', methods: ['POST'])]
-    public function index(#[CurrentUser] User $user = null): Response
+    public function login(#[CurrentUser] User $user = null): Response
     {
-        return $this->json(['user' => $user?->getId()]);
+        if (!$user) {
+            return $this->json(['error' => 'Did you forget the Content-Type: "application/json" ?'], 401);
+        }
+
+        return $this->json(['user' => $user->getId()]);
     }
 }
