@@ -16,6 +16,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
@@ -78,6 +79,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->apiTokens = new ArrayCollection();
     }
 
+    /**
+     * @return string[]
+     */
+    public function getValidTokenStrings(): array
+    {
+        return $this->getApiTokens()
+            ->filter(fn(ApiToken $token) => $token->isValid())
+            ->map(fn(ApiToken $token) => $token->getToken())
+            ->toArray();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -102,7 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**

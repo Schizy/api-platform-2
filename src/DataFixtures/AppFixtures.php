@@ -17,10 +17,7 @@ class AppFixtures extends Fixture
         ]);
 
         UserFactory::createMany(10);
-        DragonTreasureFactory::createMany(40, function () {
-            return [
-                'owner' => UserFactory::random(),
-            ];
-        });
+        DragonTreasureFactory::createMany(40, fn() => ['owner' => UserFactory::random()]);
+        ApiTokenFactory::createMany(30, fn() => ['ownedBy' => UserFactory::random()]);
     }
 }
