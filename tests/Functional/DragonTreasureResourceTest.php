@@ -46,4 +46,24 @@ class DragonTreasureResourceTest extends ApiTestCase
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJsonMatches('name', 'A shiny thing');
     }
+
+    public function testPostToCreateTreasureWithApiKey(): void
+    {
+        $this->browser()
+            ->withFullUser()
+            ->post('/api/treasures', [
+                'json' => [],
+            ])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testPostToCreateTreasureDeniedWithoutScope(): void
+    {
+        $this->browser()
+            ->withRestrictedUser()
+            ->post('/api/treasures', [
+                'json' => [],
+            ])
+            ->assertStatus(Response::HTTP_FORBIDDEN);
+    }
 }
