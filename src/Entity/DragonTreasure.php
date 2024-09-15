@@ -38,8 +38,8 @@ use function Symfony\Component\String\u;
         new Post(security: 'is_granted("ROLE_TREASURE_CREATE")'),
         new Put(security: 'is_granted("ROLE_TREASURE_EDIT")'),
         new Patch(
-            security: 'is_granted("ROLE_TREASURE_EDIT") and object.getOwner() == user', //Security BEFORE the request (using data from the DB)
-            securityPostDenormalize: 'object.getOwner() == user', //Security AFTER update (data from json) but best practice to do it in validation
+            security: 'is_granted("EDIT", object)', //Security BEFORE the request (using data from the DB)
+            securityPostDenormalize: 'is_granted("EDIT", object)', //Security AFTER update (data from json) but best practice to do it in validation
         ),
         new Delete(security: 'is_granted("ROLE_ADMIN")'),
     ],

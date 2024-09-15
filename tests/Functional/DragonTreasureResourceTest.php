@@ -75,10 +75,9 @@ class DragonTreasureResourceTest extends ApiTestCase
 
     public function testAdminCanPatchToEditTreasure(): void
     {
-        $admin = UserFactory::new()->withRoles(['ROLE_ADMIN'])->create();
-//        $admin = UserFactory::new()->asAdmin()->create();
-
+        $admin = UserFactory::createOneAdmin();
         $treasure = DragonTreasureFactory::createOne();
+
         $this->browser()
             ->actingAs($admin)
             ->patch('/api/treasures/'.$treasure->getId(), [
