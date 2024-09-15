@@ -6,6 +6,7 @@ use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -115,7 +116,9 @@ class DragonTreasure
     private \DateTimeImmutable $plunderedAt;
 
     #[ORM\Column]
+    #[Groups(['treasure:read', 'treasure:write'])]
     #[ApiFilter(BooleanFilter::class)]
+    #[ApiProperty(security: 'is_granted("EDIT", object)')]
     private bool $isPublished = false;
 
     #[ORM\ManyToOne(inversedBy: 'dragonTreasures')]
