@@ -66,4 +66,30 @@ class DragonTreasureResourceTest extends ApiTestCase
             ])
             ->assertStatus(Response::HTTP_FORBIDDEN);
     }
+
+    public function testPatchToUpdateTreasure(): void
+    {
+        $user = UserFactory::createOne();
+        $treasure = DragonTreasureFactory::createOne(['owner' => $user]);
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/treasures/'.$treasure->getId(), [
+                'json' => [
+                    'value' => 12345,
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('value', 12345)
+        ;
+        $user2 = UserFactory::createOne();
+        $this->browser()
+            ->actingAs($user2)
+            ->patch('/api/treasures/'.$treasure->getId(), [
+                'json' => [
+                    'value' => 6789,
+                ],
+            ])
+            ->assertStatus(403)
+        ;
+    }
 }
