@@ -47,26 +47,6 @@ class DragonTreasureResourceTest extends ApiTestCase
             ->assertJsonMatches('name', 'A shiny thing');
     }
 
-    public function testPostToCreateTreasureWithApiKey(): void
-    {
-        $this->browser()
-            ->withFullUser()
-            ->post('/api/treasures', [
-                'json' => [],
-            ])
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-
-    public function testPostToCreateTreasureDeniedWithoutScope(): void
-    {
-        $this->browser()
-            ->withRestrictedUser()
-            ->post('/api/treasures', [
-                'json' => [],
-            ])
-            ->assertStatus(Response::HTTP_FORBIDDEN);
-    }
-
     public function testPatchToUpdateTreasure(): void
     {
         $user = UserFactory::createOne();
@@ -91,5 +71,43 @@ class DragonTreasureResourceTest extends ApiTestCase
             ])
             ->assertStatus(403)
         ;
+    }
+
+    public function testAdminCanPatchToEditTreasure(): void
+    {
+        $admin = UserFactory::new()->withRoles(['ROLE_ADMIN'])->create();
+//        $admin = UserFactory::new()->asAdmin()->create();
+
+        $treasure = DragonTreasureFactory::createOne();
+        $this->browser()
+            ->actingAs($admin)
+            ->patch('/api/treasures/'.$treasure->getId(), [
+                'json' => [
+                    'value' => 12345,
+                ],
+            ])
+            ->assertStatus(200)
+            ->assertJsonMatches('value', 12345)
+        ;
+    }
+
+    public function testPostToCreateTreasureWithApiKey(): void
+    {
+        $this->browser()
+            ->withFullUser()
+            ->post('/api/treasures', [
+                'json' => [],
+            ])
+            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testPostToCreateTreasureDeniedWithoutScope(): void
+    {
+        $this->browser()
+            ->withRestrictedUser()
+            ->post('/api/treasures', [
+                'json' => [],
+            ])
+            ->assertStatus(Response::HTTP_FORBIDDEN);
     }
 }

@@ -52,6 +52,16 @@ final class UserFactory extends ModelFactory
         parent::__construct();
     }
 
+    public function withRoles(array $roles): self
+    {
+        return $this->addState(['roles' => $roles]);
+    }
+
+    public static function createOneAdmin(): Proxy
+    {
+        return self::new()->withRoles(['ROLE_ADMIN'])->create();
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
      *
@@ -72,13 +82,12 @@ final class UserFactory extends ModelFactory
     protected function initialize(): self
     {
         return $this
-            ->afterInstantiate(function(User $user): void {
+            ->afterInstantiate(function (User $user): void {
                 $user->setPassword($this->passwordHasher->hashPassword(
                     $user,
                     $user->getPassword()
                 ));
-            })
-        ;
+            });
     }
 
     protected static function getClass(): string
