@@ -116,7 +116,7 @@ class DragonTreasure
     private \DateTimeImmutable $plunderedAt;
 
     #[ORM\Column]
-    #[Groups(['admin:read', 'admin:write'])]
+    #[Groups(['admin:read', 'admin:write', 'owner:read'])]
     #[ApiFilter(BooleanFilter::class)]
     #[ApiProperty(security: 'is_granted("EDIT", object)')]
     private bool $isPublished = false;
