@@ -28,4 +28,13 @@ class AuthenticatedBrowser extends KernelBrowser
 
         return $this->setDefaultHttpOptions(['headers' => ['Authorization' => 'Bearer ' . $token->getToken()]]);
     }
+
+    public function patchWithHeader(string $url, array $options): self
+    {
+        // ApiPlatform requires the merge-patch header for patch queries
+        // We didn't need it in DragonTreasure because of the formats key in the resource
+        return $this
+            ->setDefaultHttpOptions(['headers' => ['Content-Type' => 'application/merge-patch+json']])
+            ->patch($url, $options);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Functional;
 
+use App\Factory\UserFactory;
 use App\Tests\Functional\ApiTestCase;
 
 class UserResourceTest extends ApiTestCase
@@ -24,5 +25,19 @@ class UserResourceTest extends ApiTestCase
                 ]
             ])
             ->assertSuccessful();
+    }
+
+    public function testPatchToUpdateUser(): void
+    {
+        $user = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user)
+            ->patchWithHeader('/api/users/' . $user->getId(), [
+                'json' => [
+                    'username' => "I'm a NEW dragon now",
+                ]
+            ])
+            ->assertStatus(200);
     }
 }
