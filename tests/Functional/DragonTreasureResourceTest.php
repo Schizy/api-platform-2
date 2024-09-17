@@ -71,7 +71,7 @@ class DragonTreasureResourceTest extends ApiTestCase
             ->assertStatus(403);
     }
 
-    public function testOwnerCanSeeIsPublishedField(): void
+    public function testOwnerCanSeeIsPublishedAndIsMineFields(): void
     {
         $treasure = DragonTreasureFactory::createOne(['isPublished' => false]);
 
@@ -79,7 +79,8 @@ class DragonTreasureResourceTest extends ApiTestCase
             ->actingAs($treasure->getOwner())
             ->get('/api/treasures/' . $treasure->getId())
             ->assertStatus(200)
-            ->assertJsonMatches('isPublished', false);
+            ->assertJsonMatches('isPublished', false)
+            ->assertJsonMatches('isMine', true);
     }
 
     public function testAdminCanPatchToEditTreasure(): void

@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[AsDecorator('api_platform.jsonld.normalizer.item')]
-class AddsOwnerGroupsNormalizer implements  NormalizerInterface, SerializerAwareInterface
+class AddsOwnerGroupsNormalizer implements NormalizerInterface, SerializerAwareInterface
 {
     public function __construct(private readonly NormalizerInterface $normalizer, private readonly Security $security)
     {
@@ -18,11 +18,19 @@ class AddsOwnerGroupsNormalizer implements  NormalizerInterface, SerializerAware
 
     public function normalize(mixed $object, string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
     {
-        if ($object instanceof DragonTreasure && $this->security->getUser() === $object->getOwner()) {
-            $context['groups'][] = 'owner:read';
+        $isMine = $object instanceof DragonTreasure && $this->security->getUser() === $object->getOwner();
+
+        if ($isMine) {
+            $context['groups'][] = 'owner:read'; // We can add groups on the fly
         }
 
-        return $this->normalizer->normalize($object, $format, $context);
+        $normalized = $this->normalizer->normalize($object, $format, $context);
+
+        if ($isMine) {
+            $normalized['isMine'] = true; // We can add or modify data even after the normalization
+        }
+
+        return $normalized;
     }
 
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
