@@ -17,6 +17,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Serializer\Filter\PropertyFilter;
 use App\Repository\DragonTreasureRepository;
+use App\Validator\IsValidOwner;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,7 +41,9 @@ use function Symfony\Component\String\u;
         new Put(security: 'is_granted("ROLE_TREASURE_EDIT")'),
         new Patch(
             security: 'is_granted("EDIT", object)', //Security BEFORE the request (using data from the DB)
-            securityPostDenormalize: 'is_granted("EDIT", object)', //Security AFTER update (data from json) but best practice to do it in validation
+
+            // Security AFTER update (data from json) but best practice to do it in validation
+//             securityPostDenormalize: 'is_granted("EDIT", object)',
         ),
         new Delete(security: 'is_granted("ROLE_ADMIN")'),
     ],
@@ -124,8 +127,10 @@ class DragonTreasure
     #[ORM\ManyToOne(inversedBy: 'dragonTreasures')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['treasure:read', 'treasure:write'])]
-    #[Assert\Valid]
     #[ApiFilter(SearchFilter::class, strategy: 'exact')]
+    #[Assert\Valid]
+    #[Assert\NotNull]
+    #[IsValidOwner]
     private ?User $owner = null;
 
     public function __construct(string $name = null)

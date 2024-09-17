@@ -49,10 +49,9 @@ class DragonTreasureResourceTest extends ApiTestCase
 
     public function testPatchToUpdateTreasure(): void
     {
-        $user = UserFactory::createOne();
-        $treasure = DragonTreasureFactory::createOne(['owner' => $user]);
+        $treasure = DragonTreasureFactory::createOne();
         $this->browser()
-            ->actingAs($user)
+            ->actingAs($treasure->getOwner())
             ->patch('/api/treasures/' . $treasure->getId(), [
                 'json' => [
                     'value' => 12345,
@@ -60,15 +59,27 @@ class DragonTreasureResourceTest extends ApiTestCase
             ])
             ->assertStatus(200)
             ->assertJsonMatches('value', 12345);
-        $user2 = UserFactory::createOne();
+
+
+        $definitelyNotTheOwner = UserFactory::createOne();
         $this->browser()
-            ->actingAs($user2)
+            ->actingAs($definitelyNotTheOwner)
             ->patch('/api/treasures/' . $treasure->getId(), [
                 'json' => [
                     'value' => 6789,
                 ],
             ])
             ->assertStatus(403);
+
+
+        $this->browser()
+            ->actingAs($treasure->getOwner())
+            ->patch('/api/treasures/' . $treasure->getId(), [
+                'json' => [
+                    'owner' => '/api/users/' . $definitelyNotTheOwner->getId(),
+                ],
+            ])
+            ->assertStatus(422); // We can't change the owner thanks to isValidOwnerValidator
     }
 
     public function testOwnerCanSeeIsPublishedAndIsMineFields(): void
