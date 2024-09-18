@@ -2,6 +2,7 @@
 
 namespace Functional;
 
+use App\Factory\DragonTreasureFactory;
 use App\Factory\UserFactory;
 use App\Tests\Functional\ApiTestCase;
 
@@ -40,4 +41,25 @@ class UserResourceTest extends ApiTestCase
             ])
             ->assertStatus(200);
     }
+
+    public function testTreasuresCannotBeStolen(): void
+    {
+        $randomDragon = UserFactory::createOne();
+        $hisTreasure = DragonTreasureFactory::createOne(['owner' => $randomDragon]);
+        $definitelyNotHisTreasure = DragonTreasureFactory::createOne();
+
+        $this->browser()
+            ->actingAs($randomDragon)
+            ->patchWithHeader('/api/users/' . $randomDragon->getId(), [
+                'json' => [
+                    'username' => 'changed',
+                    'dragonTreasures' => [
+                        '/api/treasures/' . $hisTreasure->getId(),
+                        '/api/treasures/' . $definitelyNotHisTreasure->getId(),
+                    ],
+                ]
+            ])
+            ->assertStatus(422);
+    }
 }
+
