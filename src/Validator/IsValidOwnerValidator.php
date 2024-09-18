@@ -14,12 +14,12 @@ class IsValidOwnerValidator extends ConstraintValidator
     }
 
     /**
-     * @param User $value
+     * @param User|null $value
      * @param IsValidOwner $constraint
      */
     public function validate($value, Constraint $constraint): void
     {
-        if ($value === $this->security->getUser() || $this->security->isGranted('ROLE_ADMIN')) {
+        if (is_null($value) || $value === $this->security->getUser() || $this->security->isGranted('ROLE_ADMIN')) {
             return;
         }
 

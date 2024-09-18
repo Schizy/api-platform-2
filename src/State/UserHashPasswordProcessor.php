@@ -11,10 +11,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 #[AsDecorator('api_platform.doctrine.orm.state.persist_processor')]
 class UserHashPasswordProcessor implements ProcessorInterface
 {
-    public function __construct(
-        private readonly ProcessorInterface          $innerProcessor,
-        private readonly UserPasswordHasherInterface $userPasswordHasher
-    )
+    public function __construct(private readonly ProcessorInterface $innerProcessor, private readonly UserPasswordHasherInterface $userPasswordHasher)
     {
     }
 

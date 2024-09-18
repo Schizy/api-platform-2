@@ -40,7 +40,6 @@ class DragonTreasureResourceTest extends ApiTestCase
                     'description' => 'It sparkles when I wave it in the air.',
                     'value' => 1000,
                     'coolFactor' => 5,
-                    'owner' => '/api/users/' . $user->getId(),
                 ],
             ])
             ->assertStatus(Response::HTTP_CREATED)
