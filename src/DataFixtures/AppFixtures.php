@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Factory\ApiTokenFactory;
 use App\Factory\DragonTreasureFactory;
 use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -17,7 +18,7 @@ class AppFixtures extends Fixture
         ]);
 
         UserFactory::createMany(10);
-        DragonTreasureFactory::createMany(40, fn() => ['owner' => UserFactory::random()]);
-        ApiTokenFactory::createMany(30, fn() => ['ownedBy' => UserFactory::random()]);
+        DragonTreasureFactory::createMany(40, static fn() => ['owner' => UserFactory::random(), 'isPublished' => random_int(0, 10) > 3,]);
+        ApiTokenFactory::createMany(30, static fn() => ['ownedBy' => UserFactory::random()]);
     }
 }
